@@ -1,0 +1,42 @@
+baseURL: https://example.org/
+languageCode: en-us
+title: UltraGeoSite
+theme: PaperMod
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+        enable: true
+
+params:
+  math: true
+  homeInfoParams:
+    Title: "UltraGeoPro Site"
+    Content: "pinnacle of web development"
+  socialIcons:
+    - name: github
+      url: https://github.com/ultrageopro1966
+    - name: telegram
+      url: https://t.me/UltraGeoPro
+    - name: email
+      url: mailto:me@ultrageopro.ru
+
+  ShowShareButtons: true
+  ShowReadingTime: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+
+menus:
+  main:
+    - name: Home
+      url: /
+    - name: About
+      url: /about
+    - name: Tags
+      url: /tags

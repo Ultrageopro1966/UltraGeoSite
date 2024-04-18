@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Time Series | UltraGeoSite</title>
+<meta name="keywords" content="python, time series">
+<meta name="description" content="Введение статья подготовлена UltraGeoPro
+В данной статье будут рассмотрены способы анализа временных рядов. Разберем основные методы прогнозирования упорядоченных данных.
+Простыми словами, временной ряд - это данные, упорядоченные по времени (например, курс доллара). Анализ временных рядов позволяет находить основные закономерности в данных и прогнозировать их.
+Пример временного ряда (зависимость продаж от времени)
+На текущий момент было изобретено большое кол-во методов работы со структурированными данными, так что мы рассмотрим лишь некоторые из них на примере данных о погоде с 2013 года по 2017.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/time/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.b609c58d5c11bb90b1a54e04005d74ad1ddf22165eb79f5533967e57df9c3b50.css" integrity="sha256-tgnFjVwRu5CxpU4EAF10rR3fIhZet59VM5Z&#43;V9&#43;cO1A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/time/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '\\[', right: '\\]', display: true},   
+        {left: '$$', right: '$$', display: true},     
+        {left: '$', right: '$', display: false},  
+      ],
+      throwOnError : false
+    });
+  });
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="UltraGeoSite (Alt + H)">UltraGeoSite</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Time Series
+    </h1>
+    <div class="post-meta"><span title='2024-04-17 22:16:16 +0300 MSK'>April 17, 2024</span>&nbsp;·&nbsp;10 min
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="введение">Введение<a hidden class="anchor" aria-hidden="true" href="#введение">#</a></h1>
+<p><em>статья подготовлена <a href="https://github.com/Ultrageopro1966">UltraGeoPro</a></em></p>
+<p><strong>В данной статье будут рассмотрены способы анализа временных рядов.</strong> Разберем основные методы прогнозирования упорядоченных данных.</p>
+<p>Простыми словами, <strong>временной ряд</strong> - это данные, упорядоченные по времени (например, курс доллара).
+Анализ временных рядов позволяет находить основные закономерности в данных и прогнозировать их.</p>
+<p><img loading="lazy" src="https://i.ibb.co/ynHWtpN/Tableau.jpg" alt=""  />
+</p>
+<blockquote>
+<p>Пример временного ряда (зависимость продаж от времени)</p>
+</blockquote>
+<p>На текущий момент было изобретено большое кол-во методов работы со структурированными данными, так что мы рассмотрим лишь некоторые из них на примере данных о погоде с 2013 года по 2017.</p>
+<h1 id="обработка-данных">Обработка данных<a hidden class="anchor" aria-hidden="true" href="#обработка-данных">#</a></h1>
+<hr>
+<p><em>Для анализа временных рядов и их прогнозирования будет использован язык Python в связке со сторонними библиотеками (pandas, numpy, tensorflow, matplotlib).
+Статья содержит достаточное кол-во визуализаций и пояснений для понимания ее содержания.</em></p>
+<h2 id="загрузка-датасета">Загрузка датасета<a hidden class="anchor" aria-hidden="true" href="#загрузка-датасета">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Импорт библиотек</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> matplotlib <span style="color:#f92672">import</span> pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Выгрузка данных из таблицы с тренировочными данными</span>
+</span></span><span style="display:flex;"><span>train_data: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#34;DailyDelhiClimateTrain.csv&#34;</span>)<span style="color:#f92672">.</span>values
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Выгрузка данных из таблицы с тестовыми данными</span>
+</span></span><span style="display:flex;"><span>test_data: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#34;DailyDelhiClimateTest.csv&#34;</span>)<span style="color:#f92672">.</span>values
+</span></span></code></pre></div><p>Изображение первых строк тестовой таблицы:</p>
+<p><img loading="lazy" src="https://i.ibb.co/59YwYW0/2023-07-30-232717.png" alt=""  />
+</p>
+<blockquote>
+<p><a href="https://www.kaggle.com/datasets/sumanthvrao/daily-climate-time-series-data">Ссылка на таблицу</a></p>
+</blockquote>
+<h2 id="нормализация-данных">Нормализация данных<a hidden class="anchor" aria-hidden="true" href="#нормализация-данных">#</a></h2>
+<p><em>В этой статье для удобства мы рассмотрим только температуру, но вы можете взять любой другой столбец датасета. Или даже все сразу.</em></p>
+<p>Естественно, ни одна модель не сможет понять, что значит строковое представление даты &ldquo;2017-01-01&rdquo;, так что давайте приведем значения первого столбца к целым числам (кол-во дней с начала отсчета)</p>
+<p>Функция перевода даты в кол-во дней от 2013-01-01 (самая первая дата в таблице):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">days_since_zero_date</span>(date_str: str) <span style="color:#f92672">-&gt;</span> int:
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># Преобразование строки в объект datetime</span>
+</span></span><span style="display:flex;"><span>	date_format: str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>	date_obj <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>strptime(date_str, date_format)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># Нулевая дата</span>
+</span></span><span style="display:flex;"><span>	zero_date <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>strptime(<span style="color:#e6db74">&#34;2013-01-01&#34;</span>, date_format)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># Вычисление разницы в днях</span>
+</span></span><span style="display:flex;"><span>	delta <span style="color:#f92672">=</span> date_obj <span style="color:#f92672">-</span> zero_date
+</span></span><span style="display:flex;"><span>	days <span style="color:#f92672">=</span> delta<span style="color:#f92672">.</span>days
+</span></span><span style="display:flex;"><span>	 
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> days
+</span></span></code></pre></div><p>Теперь переведем все даты в загруженных таблицах в дни и выведем результат:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Применяем ранее определенную функцию ко всем датам датасета</span>
+</span></span><span style="display:flex;"><span>train_data[:, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>vectorize(days_since_zero_date)(train_data[:, <span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>test_data[:, <span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>vectorize(days_since_zero_date)(test_data[:, <span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>train_data <span style="color:#f92672">=</span> train_data<span style="color:#f92672">.</span>astype(<span style="color:#e6db74">&#34;float&#34;</span>)
+</span></span><span style="display:flex;"><span>test_data <span style="color:#f92672">=</span> test_data<span style="color:#f92672">.</span>astype(<span style="color:#e6db74">&#34;float&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(train_data[<span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Вывод - [0 10.0 84.5 0.0 1015.6666666666666]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Видно, что все даты превратились в дни</span>
+</span></span></code></pre></div><p>Далее необходимо нормализовать данные по формуле (метод Z-Нормализация)
+</p>
+$$x_{i}' = \frac{x_{i} - \overline{X}}{\sigma_{x}}$$
+<p>
+Где:</p>
+<ol>
+<li>$\overline{X}$ - среднее значение выборки</li>
+<li>$\sigma_{x}$ - стандартное отклонение выборки</li>
+<li>$x_{i}$ - ненормализованное значение</li>
+<li>$x_{i}&rsquo;$ - нормализованное значение</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Normalize</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, data: np<span style="color:#f92672">.</span>ndarray) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>data: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>copy(data) <span style="color:#75715e"># Записываем копию данных</span>
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Вычисляем среднее по каждому столбцу</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>__mean: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>mean(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Вычисляем стандартное отклонение по каждому столбцу</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>__std_dev: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>std(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">normalizeData</span>(self) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>ndarray:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Возврат нормализованных даннах по формуле</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> (self<span style="color:#f92672">.</span>data <span style="color:#f92672">-</span> self<span style="color:#f92672">.</span>__mean) <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>__std_dev
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">DeNormalizeData</span>(
+</span></span><span style="display:flex;"><span>		self, normalized_data: np<span style="color:#f92672">.</span>ndarray, axes: list[int] <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>	) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>ndarray:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Денормализация днанных по указанной оси</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> normalized_data <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>__std_dev[axes] <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>__mean[axes]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Нормализация температуры</span>
+</span></span><span style="display:flex;"><span>train_normalize_class <span style="color:#f92672">=</span> Normalize(train_data[:, <span style="color:#ae81ff">1</span>:])
+</span></span><span style="display:flex;"><span>train_data[:, <span style="color:#ae81ff">1</span>:] <span style="color:#f92672">=</span> train_normalize_class<span style="color:#f92672">.</span>normalizeData()
+</span></span></code></pre></div><p>В данном фрагменте мы создали класс, реализующий логику нормализации данных. В двух последних строках нормализовали обучающую выборку (кроме значений дней). Метод <code>DeNormalizeData</code> позволяет интерпретировать любые данные, полученные с помощью модели, в привычной нам форме.</p>
+<p>Построим график температуры для наглядности.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Создаем поле графика</span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Лимиты на осях</span>
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>set_ylim([<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">40</span>])
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>set_ylim([<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">40</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Подписи осей</span>
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>set_ylabel(<span style="color:#e6db74">&#34;Темперетура&#34;</span>)
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;День&#34;</span>)
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>set_xlabel(<span style="color:#e6db74">&#34;День&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Нормализованная температура&#34;</span>)
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Реальная температура&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Сетка на осях</span>
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Отображение нормализованных и ненормализованных данных</span>
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>plot(train_data[:, <span style="color:#ae81ff">1</span>], c<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;b&#34;</span>, linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>ax[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>plot(
+</span></span><span style="display:flex;"><span>	train_normalize_class<span style="color:#f92672">.</span>DeNormalizeData(train_data[:, <span style="color:#ae81ff">1</span>], axes<span style="color:#f92672">=</span>[<span style="color:#ae81ff">0</span>]),
+</span></span><span style="display:flex;"><span>	c<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;r&#34;</span>,
+</span></span><span style="display:flex;"><span>	linewidth<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><img loading="lazy" src="https://i.ibb.co/1KJHPPk/Figure-1.png" alt=""  />
+</p>
+<blockquote>
+<p>Видно, что нормализованные данные не потеряли свою информационную ценность, легко восстанавливаются в реальные данные (второй график) и более удобны для анализа с помощью моделей машинного обучения. <a href="https://medium.com/@urvashilluniya/why-data-normalization-is-necessary-for-machine-learning-models-681b65a05029#:~:text=Normalization%20is%20a%20technique%20often,dataset%20does%20not%20require%20normalization.">О пользе нормализации</a></p>
+</blockquote>
+<h2 id="сглаживание-шума">Сглаживание шума<a hidden class="anchor" aria-hidden="true" href="#сглаживание-шума">#</a></h2>
+<p>Сглаживать шум будем методом скользящей средней. Суть метода в том, что мы проходимся по всему графику &ldquo;окном&rdquo; определенного размера. Перемещая окно, вычисляем среднее всех значений, которые в него попали. Таким образом мы сглаживаем весь шум графика, так как он компенсирует сам себя.
+<em>На самом деле, для решения нашей задачи применение данного метода не является обязательным, в статье он приведен скорее в образовательных целях</em>
+</p>
+$$
+SMA_{t}=\frac{1}{n}\sum^{n-1}_{i=0}p_{t-i}
+$$
+<p>
+$SMA_{t}$ - значение простого скользящего среднего в точке $t$
+$n$ - количество значений исходной функции для расчёта скользящего среднего (размер &ldquo;окна&rdquo;)
+$p_{t-i}$ - значение исходной функции в точке $t-i$</p>
+<p><img loading="lazy" src="https://i.ibb.co/Svv55yJ/450px-Movingaverage3-svg.png" alt=""  />
+</p>
+<blockquote>
+<p>Пример использования $SMA$ (взято из интернета)</p>
+</blockquote>
+<p>Реализация в коде с помощью <code>pandas</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>window_size <span style="color:#f92672">=</span> train_data<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">//</span> <span style="color:#ae81ff">70</span>
+</span></span><span style="display:flex;"><span>denoised_data: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>	pd<span style="color:#f92672">.</span>Series(train_data[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">.</span>rolling(window<span style="color:#f92672">=</span>window_size)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">.</span>mean()
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">.</span>iloc[window_size <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> :]
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">.</span>values
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>Результат:</p>
+<p><img loading="lazy" src="https://i.ibb.co/h95XGr0/Figure-2.png" alt=""  />
+</p>
+<blockquote>
+<p><em>Я не буду прикреплять код построения графика, так как ничего нового вы там не найдете.</em></p>
+</blockquote>
+<h1 id="прогнозирование-данных">Прогнозирование данных<a hidden class="anchor" aria-hidden="true" href="#прогнозирование-данных">#</a></h1>
+<hr>
+<p>Видно, что график температуры обладает ярко выраженной периодичностью и сильно напоминает синусоиду.
+Из этого вытекает цель - <strong>подобрать наиболее подходящую синусоиду</strong> (или сумму синусоид), которая будет наилучшим образом соответствовать температуре.</p>
+<h2 id="подбор-подходящей-кривой-с-помощью-преобразования-фурье-и-градиентного-спуска">Подбор подходящей кривой с помощью преобразования Фурье и градиентного спуска.<a hidden class="anchor" aria-hidden="true" href="#подбор-подходящей-кривой-с-помощью-преобразования-фурье-и-градиентного-спуска">#</a></h2>
+<h3 id="преобразование-фурье">Преобразование Фурье<a hidden class="anchor" aria-hidden="true" href="#преобразование-фурье">#</a></h3>
+<p><strong>Преобразование Фурье</strong> - операция, которая сопоставляет первой функции вторую: вторая функция описывает коэффициенты («амплитуды») при разложении первой функции на элементарные составляющие — гармонические колебания с разными частотами. То есть фактически данное преобразование раскладывает функцию на сумму синусов разной частоты.</p>
+<p>Формально преобразование определяется так:
+</p>
+$$
+G(t) = \int_{-\infty}^{\infty} g(t) e^{-2\pi ift} \, dt 
+$$
+<p>
+Где $f$ - исследуемый диапазон частот, а $G(t)$ - амплитуда синусоиды частоты $f$, которая является слагаемым исходной функции.
+<em>Для более подробного ознакомления с концепцией преобразования Фурье советую посмотреть данное <a href="https://www.youtube.com/watch?v=spUNpyF58BY">видео</a></em></p>
+<p><img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Fourier_transform_time_and_frequency_domains.gif/411px-Fourier_transform_time_and_frequency_domains.gif" alt=""  />
+</p>
+<blockquote>
+<p>Визуализация преобразования</p>
+</blockquote>
+<p>Таким образом, если мы возьмем несколько синусоид максимальной амплитуды (те, которые лучше всего аппроксимируют наши данные) и построим график их суммы, то мы получим неплохую аппроксимацию температуры (в нашем случае).</p>
+<p>Но, к сожалению, преобразование Фурье не выдает нам все веса идеальной функции, но и нам нужна только частота, ведь остальные параметры мы получим с помощью метода градиентного спуска. Но давайте по порядку и в коде:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Значения на оси X (абсциссе), на основе которых модель будет делать предсказания</span>
+</span></span><span style="display:flex;"><span>x_data:np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, len(denoised_data), len(denoised_data))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Дискретное Преобразование Фурье, список амплитуд</span>
+</span></span><span style="display:flex;"><span>mfft:np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>fft<span style="color:#f92672">.</span>fft(denoised_data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Получаем индексы частот, которые соответствуют самым значимым (с высокой амплитудой) синусоидам.</span>
+</span></span><span style="display:flex;"><span>imax:np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>argsort(np<span style="color:#f92672">.</span>absolute(mfft))[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+</span></span></code></pre></div><p>Для простоты мы будем раскладывать наши данные на сумму пяти синусоид. Не будем брать слишком много слагаемых, чтобы модель не потеряла обобщающую способность.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Кол-во синусов, которые мы будем суммировать</span>
+</span></span><span style="display:flex;"><span>number_of_sinuses: int <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Берем первые number_of_sinuses самых высоких амплитуд (они соответствуют частотам)</span>
+</span></span><span style="display:flex;"><span>imax <span style="color:#f92672">=</span> imax[:number_of_sinuses]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Вычисляем частоту каждой синусоиды</span>
+</span></span><span style="display:flex;"><span>frequency:np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(imax) <span style="color:#f92672">/</span> len(denoised_data)
+</span></span></code></pre></div><h3 id="оптимизация-параметров">Оптимизация параметров<a hidden class="anchor" aria-hidden="true" href="#оптимизация-параметров">#</a></h3>
+<p>Для начала определим функцию, которая будет аппроксимировать наши данные о температуре. Из-за того, что мы рассматриваем сумму пяти синусов, то определение нашей модели напрашивается само:
+</p>
+$$
+Y(w, x) = b + \sum_{i=0}^{4} w_{3i}\sin(w_{3i+1}x + w_{3i+2})
+$$
+<p>
+Теперь нужно инициализировать наши параметры так, чтобы их получилось верно оптимизировать (большинство моделей плохо оптимизируют параметры тригонометрических функций со случайно инициализированной частотой).</p>
+<ol>
+<li>Параметр $w_{3i}$  будем инициализировать значением стандартного отклонения всей выборки ($w_{3i} = \sigma_{x}$).</li>
+<li>Параметр $w_{3i+1}$ (самый важный)  будем инициализировать полученной частотой (умноженной на $2\pi$) для каждого синуса соответственно ($w_{3i+1}=2\pi f_{i}$). Это нужно сделать, чтобы модель не подбирала частоту волны, в противном случае параметры не будут оптимизированы.</li>
+<li>Параметр сдвига по абсциссе мы инициализируем $0$</li>
+<li>Параметр $b$ мы инициализируем математическим ожиданием выборки ($b = \overline{X}$)</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Начальные параметры</span>
+</span></span><span style="display:flex;"><span>init_params: np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(
+</span></span><span style="display:flex;"><span>	[
+</span></span><span style="display:flex;"><span>		np<span style="color:#f92672">.</span>array([np<span style="color:#f92672">.</span>std(denoised_data), frequency[i] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>pi, <span style="color:#ae81ff">0.0</span>])
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(number_of_sinuses)
+</span></span><span style="display:flex;"><span>	]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bias: float <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>mean(denoised_data)
+</span></span></code></pre></div><p>Оптимизируем наши параметры путем градиентного спуска в связке с оптимизатором Adam. В качестве функции ошибки модели используем $MSE$.</p>
+<hr>
+<p><strong>Функция ошибки (MSE), которую наш алгоритм будет пытаться минимизировать</strong>
+</p>
+$$
+MSE = \frac{1}{n}\sum_{i=1}^{n}(y-\overline y)^{2}
+$$
+<p>
+$y$ - реальное значение целевой переменной (метка)
+$\overline y$ - предсказание модели</p>
+<p><strong>Градиентный спуск</strong>
+Градиентный спуск заключается в том, что по мере обучения модели мы вычитаем из каждого веса значение его локальной частной производной от функции ошибки. Данный алгоритм приводит к ее минимизации, то есть к наиболее точным ответам модели. Определение:
+</p>
+$$
+w_{n} = w_{n} - \frac{\delta E}{\delta w_{n}}\cdot \eta
+$$
+<p>
+$E$ - функция ошибки
+$w_{n}$ - данный вес
+$\eta$ - коэффициент скорости обучения (чем больше, тем агрессивнее обучается модель, часто выбирают $10^{-3}$)</p>
+<p><strong>Оптимизатор Adam</strong> <em>(необязательно для прочтения)</em>
+Идея Adam заключается в том, чтобы адаптивно изменять скорость обучения для каждого веса на основе двух моментов первого и второго порядков градиента. Веса с большим градиентом получают меньший шаг, а веса с меньшим градиентом получают больший шаг.</p>
+<p>Оптимизатор работает по данному алгоритму:
+$m_t = \beta_1 m_{t-1} + (1 - \beta_1)g_t$
+$v_t = \beta_2 v_{t-1} + (1 - \beta_2)g_t^2$
+$\hat{m_t} = \frac{m_t}{1 - \beta_1^t}$
+$\hat{v_t} = \frac{v_t}{1 - \beta_2^t}$</p>
+<p>Оптимизация весов:
+</p>
+$$w_t = w_{t-1} - \frac{\eta}{\sqrt{\hat{v_t}}+\epsilon} \hat{m_t}$$
+<p>Где:
+$t$ - номер итерации
+$w_t$ - вектор весов в момент времени $t$
+$g_t$ - вектор градиентов в момент времени $t$
+$m_t$ - оценка первого момента (среднего значения) градиента в момент времени $t$
+$v_t$ - оценка второго момента (среднего квадрата) градиента в момент времени $t$
+$\beta_1$ и $\beta_2$ - параметры, обычно равные 0.9 и 0.999 соответственно
+$\eta$ - скорость обучения
+$\epsilon$ - малое число, используемое для стабилизации деления</p>
+<p><img loading="lazy" src="https://i.ibb.co/nC9ygCf/Gradient-descent.gif" alt=""  />
+</p>
+<blockquote>
+<p>Пример поиска минимумов функции методом градиентного спуска</p>
+</blockquote>
+<hr>
+<h3 id="модель">Модель<a hidden class="anchor" aria-hidden="true" href="#модель">#</a></h3>
+<p>Создадим модель с помощью библиотеки tensorflow. Остальные популярные варианты (например, scipy) представляют скудные возможности для определения и визуализации обучения, так что напишем собственную модель и обучим ее.</p>
+<p><strong>Важно!</strong> Так как оптимизатор <code>Adam</code> обладает стохастической природой, нужно выполнить команду <code>tf.random.set_seed()</code>, чтобы все, кто запустит код получили одинаковые результаты.</p>
+<p><strong>Определение функционала модели и ее параметров (с помощью <code>keras.layers.Layer</code>)</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Импорт модулей</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> tensorflow <span style="color:#66d9ef">as</span> tf
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> keras <span style="color:#f92672">import</span> layers
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> keras.optimizers <span style="color:#f92672">import</span> Adam
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>tf<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>set_seed(<span style="color:#ae81ff">8</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Определяем слой</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SinLayer</span>(layers<span style="color:#f92672">.</span>Layer):
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self): <span style="color:#75715e"># Инициализируем методы и атрибуты родительского класса</span>
+</span></span><span style="display:flex;"><span>		super(SinLayer, self)<span style="color:#f92672">.</span>__init__()
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">build</span>(self, _): <span style="color:#75715e"># Задаем начальные параметры</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>kernel <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>add_weight(
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;kernel&#34;</span>, shape<span style="color:#f92672">=</span>(number_of_sinuses, <span style="color:#ae81ff">3</span>), trainable<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>		) <span style="color:#75715e"># Веса модели</span>
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Свободный коэффициент</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>bias <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>add_weight(name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;bias&#34;</span>, shape<span style="color:#f92672">=</span>(), trainable<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>) 
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call</span>(self, inputs): <span style="color:#75715e"># Реализация функционала нашей модели (ранее в статье)</span>
+</span></span><span style="display:flex;"><span>		result: float <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(number_of_sinuses):
+</span></span><span style="display:flex;"><span>			result <span style="color:#f92672">+=</span> self<span style="color:#f92672">.</span>kernel[i][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> tf<span style="color:#f92672">.</span>sin(
+</span></span><span style="display:flex;"><span>				self<span style="color:#f92672">.</span>kernel[i][<span style="color:#ae81ff">1</span>] <span style="color:#f92672">*</span> inputs <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>kernel[i][<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>			)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> result <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>bias <span style="color:#75715e"># Результат работы модели</span>
+</span></span></code></pre></div><p>Теперь определим саму модель и скомпилируем ее:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Определение модели</span>
+</span></span><span style="display:flex;"><span>model <span style="color:#f92672">=</span> tf<span style="color:#f92672">.</span>keras<span style="color:#f92672">.</span>Sequential(
+</span></span><span style="display:flex;"><span>	[
+</span></span><span style="display:flex;"><span>		layers<span style="color:#f92672">.</span>Input(shape<span style="color:#f92672">=</span>(<span style="color:#ae81ff">1</span>,)),
+</span></span><span style="display:flex;"><span>		SinLayer(),
+</span></span><span style="display:flex;"><span>	]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Компилируем модель оптимизатором Adam (с наиболее подходящими параметрами)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># и ошибкой MSE</span>
+</span></span><span style="display:flex;"><span>model<span style="color:#f92672">.</span>compile(Adam(<span style="color:#ae81ff">0.001</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.9</span>), <span style="color:#e6db74">&#34;mean_squared_error&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Задаем модели ранее определенные веса для правильной оптимизации весов</span>
+</span></span><span style="display:flex;"><span>model<span style="color:#f92672">.</span>set_weights([init_params, bias])
+</span></span></code></pre></div><p>Теперь обучим нашу модель на тренировочных данных и построим график изменения ошибки по мере обучения.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Получаем историю ошибки модели</span>
+</span></span><span style="display:flex;"><span>history <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>fit(x_data, denoised_data, epochs<span style="color:#f92672">=</span><span style="color:#ae81ff">70</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Отображаем ее на графике</span>
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>plot(history<span style="color:#f92672">.</span>history[<span style="color:#e6db74">&#34;loss&#34;</span>])
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>grid()
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#34;Эпоха&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#34;Значение ошибки MSE на данной эпохе&#34;</span>)
+</span></span><span style="display:flex;"><span>plt<span style="color:#f92672">.</span>show()
+</span></span></code></pre></div><p><em>Эпоха — это <strong>количество полных прохождений всего датасета</strong>. Чем больше эпох, тем лучше натренирована нейросеть.</em></p>
+<p><img loading="lazy" src="https://i.ibb.co/5vBR9pr/Figure-4.png" alt=""  />
+</p>
+<blockquote>
+<p>Видно, что ошибка модели сильно уменьшилась, значит, она натренировалась</p>
+</blockquote>
+<p><strong>Важное замечание!</strong> К ответу регрессионной модели принято добавлять случайный шум (мы тоже так будем делать):
+</p>
+$$y = Y(w, x) + \epsilon$$
+<p>
+Теперь посмотрим, как наша модель предсказывает данные тренировочной выборки. Для этого также построим график (но перед отображением нужно обязательно денормализовать данные с помощью ранее определенного метода <code>DeNormalizeData</code>):
+<img loading="lazy" src="https://i.ibb.co/B2zjPmc/Figure-5.png" alt=""  />
+</p>
+<blockquote>
+<p>Видно, что наша модель успешно уловила все тренды и периодизацию. Хороший результат.</p>
+</blockquote>
+<h3 id="вычисление-ошибки-модели-на-тестовой-выборке">Вычисление ошибки модели на тестовой выборке<a hidden class="anchor" aria-hidden="true" href="#вычисление-ошибки-модели-на-тестовой-выборке">#</a></h3>
+<hr>
+<p>Для вычисления ошибки модели  будем использовать функцию MAE:
+</p>
+$$
+MAE(y, \overline{y}) = \frac{1}{n}\sum\mid y-\overline{y}\mid
+$$
+<p>
+Фактически, данная ошибка - среднее отклонение предсказанных данных от действительных.</p>
+<p>Вычислим ошибку на тестовой выборке (на денормализованных, реальных данных):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Определяем функцию ошибки</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">MAE</span>(predictions: np<span style="color:#f92672">.</span>ndarray, labels: np<span style="color:#f92672">.</span>ndarray) <span style="color:#f92672">-&gt;</span> float:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>mean(np<span style="color:#f92672">.</span>abs(predictions <span style="color:#f92672">-</span> labels))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Выводим значение ошибки</span>
+</span></span><span style="display:flex;"><span>print(
+</span></span><span style="display:flex;"><span>	MAE(
+</span></span><span style="display:flex;"><span>		train_normalize_class<span style="color:#f92672">.</span>DeNormalizeData(
+</span></span><span style="display:flex;"><span>			model(test_data[:, <span style="color:#ae81ff">0</span>])<span style="color:#f92672">.</span>numpy()<span style="color:#f92672">.</span>T[<span style="color:#ae81ff">0</span>], axis<span style="color:#f92672">=</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>		) <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(size<span style="color:#f92672">=</span>test_data[:, <span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>shape),
+</span></span><span style="display:flex;"><span>		test_data[:, <span style="color:#ae81ff">1</span>],
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p><em>Мы выполняем преобразование <code>data.numpy().T[0]</code> из-за того, что модель выводит тензор Tensorflow формы (114, 1). Данное преобразование переводит ответ модели в вектор numpy и выделяет 114 элементов, которые являются ответом</em></p>
+<p>После выполнения кода ошибка модели составила <code>2.2743354568119476</code> градусов цельсия. То есть наша регрессионная модель предсказывает температуру на 114 дней (длина тестовой выборки) вперед с погрешностью чуть более 2 градусов.</p>
+<p><em>Важно заметить, что данная модель - лишь пример, который был приведен в целях указать на возможные способы поиска периодизации и трендов в данных. Если у вас есть структурированные данные, не такие сложные как погода, то описанный в статье метод может оказаться более чем эффективным. Но в случае с погодой, естественно, правильным будет обращаться за помощью к метеорологической службе.</em></p>
+<h1 id="заключение">Заключение<a hidden class="anchor" aria-hidden="true" href="#заключение">#</a></h1>
+<hr>
+<p>Кроме методов, рассмотренных выше, существует множество различных способов анализировать и прогнозировать временные ряды. К ним относятся нейросети и прочие математические приемы.</p>
+<p>Материалы из статьи:</p>
+<ul>
+<li><a href="https://www.kaggle.com/datasets/sumanthvrao/daily-climate-time-series-data">Датасет</a></li>
+<li><a href="https://medium.com/@urvashilluniya/why-data-normalization-is-necessary-for-machine-learning-models-681b65a05029#:~:text=Normalization%20is%20a%20technique%20often,dataset%20does%20not%20require%20normalization.">О пользе нормализации</a></li>
+<li><a href="https://www.youtube.com/watch?v=spUNpyF58BY">Преобразование Фурье</a></li>
+</ul>
+<p>Тем, кому интересна концепция прогнозирования временных рядов, могу посоветовать:</p>
+<ul>
+<li><a href="https://www.tensorflow.org/tutorials/structured_data/time_series">Прогнозирование с помощью рекуррентных нейросетей. Курс от tensorflow</a></li>
+<li><a href="https://towardsdatascience.com/the-complete-guide-to-time-series-analysis-and-forecasting-70d476bfe775">Различные методы анализа временных рядов</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Time_series#Tools">Инструменты анализа временных рядов</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
+      <li><a href="http://localhost:1313/tags/time-series/">Time Series</a></li>
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on x"
+            href="https://x.com/intent/tweet/?text=Time%20Series&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f&amp;hashtags=python%2ctimeseries">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f&amp;title=Time%20Series&amp;summary=Time%20Series&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f&title=Time%20Series">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on whatsapp"
+            href="https://api.whatsapp.com/send?text=Time%20Series%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on telegram"
+            href="https://telegram.me/share/url?text=Time%20Series&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Time Series on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Time%20Series&u=http%3a%2f%2flocalhost%3a1313%2fposts%2ftime%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2024 <a href="http://localhost:1313/">UltraGeoSite</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

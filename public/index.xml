@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>UltraGeoSite</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on UltraGeoSite</description>
+    <generator>Hugo -- 0.125.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 17 Apr 2024 22:16:16 +0300</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Time Series</title>
+      <link>http://localhost:1313/posts/time/</link>
+      <pubDate>Wed, 17 Apr 2024 22:16:16 +0300</pubDate>
+      <guid>http://localhost:1313/posts/time/</guid>
+      <description>Введение статья подготовлена UltraGeoPro
+В данной статье будут рассмотрены способы анализа временных рядов. Разберем основные методы прогнозирования упорядоченных данных.
+Простыми словами, временной ряд - это данные, упорядоченные по времени (например, курс доллара). Анализ временных рядов позволяет находить основные закономерности в данных и прогнозировать их.
+Пример временного ряда (зависимость продаж от времени)
+На текущий момент было изобретено большое кол-во методов работы со структурированными данными, так что мы рассмотрим лишь некоторые из них на примере данных о погоде с 2013 года по 2017.</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description> 🧑‍🎓 About Me: I am a neural network developer and mathematician from Russia.
+📚 Calculus and Linear Algebra. 🧠 Deep Learning/Neural Networks 👁️ Computer Vision 🔭 I’m currently working on Diffusion Model 🌱 I’m currently learning ML/DL, calculus, mobile development 👯 I am a member of the CHFTM organization 📃 Latest repository </description>
+    </item>
+  </channel>
+</rss>
