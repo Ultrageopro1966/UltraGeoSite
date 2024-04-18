@@ -1,7 +1,7 @@
 baseURL: https://example.org/
 languageCode: en-us
 title: UltraGeoSite
-theme: PaperMod
+theme: github.com/adityatelange/hugo-PaperMod
 markup:
   goldmark:
     extensions:
