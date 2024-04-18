@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on UltraGeoSite</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>https://example.org/tags/</link>
     <description>Recent content in Tags on UltraGeoSite</description>
     <generator>Hugo -- 0.125.0</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 17 Apr 2024 22:16:16 +0300</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python</title>
-      <link>http://localhost:1313/tags/python/</link>
+      <link>https://example.org/tags/python/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/python/</guid>
+      <guid>https://example.org/tags/python/</guid>
       <description></description>
     </item>
     <item>
       <title>Time Series</title>
-      <link>http://localhost:1313/tags/time-series/</link>
+      <link>https://example.org/tags/time-series/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/tags/time-series/</guid>
+      <guid>https://example.org/tags/time-series/</guid>
       <description></description>
     </item>
   </channel>

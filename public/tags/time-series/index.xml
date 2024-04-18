@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Time Series on UltraGeoSite</title>
-    <link>http://localhost:1313/tags/time-series/</link>
+    <link>https://example.org/tags/time-series/</link>
     <description>Recent content in Time Series on UltraGeoSite</description>
     <generator>Hugo -- 0.125.0</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 17 Apr 2024 22:16:16 +0300</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/time-series/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://example.org/tags/time-series/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Time Series</title>
-      <link>http://localhost:1313/posts/time/</link>
+      <link>https://example.org/posts/time/</link>
       <pubDate>Wed, 17 Apr 2024 22:16:16 +0300</pubDate>
-      <guid>http://localhost:1313/posts/time/</guid>
+      <guid>https://example.org/posts/time/</guid>
       <description>Введение статья подготовлена UltraGeoPro
 В данной статье будут рассмотрены способы анализа временных рядов. Разберем основные методы прогнозирования упорядоченных данных.
 Простыми словами, временной ряд - это данные, упорядоченные по времени (например, курс доллара). Анализ временных рядов позволяет находить основные закономерности в данных и прогнозировать их.
