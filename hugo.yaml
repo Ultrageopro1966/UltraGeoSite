@@ -36,6 +36,7 @@ params:
 
   assets:
     disableHLJS: true
+    favicon: "/assets/earth_africa.ico"
 
   ShowReadingTime: true
   ShowPostNavLinks: true
