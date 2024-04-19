@@ -3,6 +3,13 @@ languageCode: en-us
 title: UltraGeoSite
 theme: PaperModTheme
 markup:
+  highlight:
+      # anchorLineNos: true
+      codeFences: true
+      guessSyntax: true
+      lineNos: true
+      # noClasses: false
+      style: monokai
   goldmark:
     extensions:
       passthrough:
@@ -17,7 +24,7 @@ markup:
 params:
   math: true
   homeInfoParams:
-    Title: "UltraGeoPro Site"
+    Title: "🌍 UltraGeoPro Site"
     Content: "pinnacle of web development"
   socialIcons:
     - name: github
@@ -27,10 +34,13 @@ params:
     - name: email
       url: mailto:me@ultrageopro.ru
 
-  ShowShareButtons: true
+  assets:
+    disableHLJS: true
+
   ShowReadingTime: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
 
 menus:
   main:
