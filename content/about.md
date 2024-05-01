@@ -9,12 +9,12 @@ url = '/about/'
 I am a neural network developer and mathematician from Russia.
 - 📚 **Calculus and Linear Algebra.**
 - 🧠 **Deep Learning/Neural Networks**
-- 📈 **Data analysis**
-- 💻 **Backend development**
+- 👁️ **Computer Vision**
 - 🔭 I’m currently working on [**Diffusion Model**](https://huggingface.co/blog/annotated-diffusion)
-- 🌱 I’m currently learning **ML/DL, calculus, mobile development**
+- 🌱 I’m currently learning **ML/DL, calculus, backend development**
 - 👯 I am a member of the [**CHFTM**](https://github.com/chftm) organization
-- 📃 Latest [**repository**](https://github.com/Ultrageopro1966/Speech2Note)
+- 🤖 [**Contexto Game Bot**](https://t.me/contexto_gamee_bot) dev
+- 📃 Latest [**repository**](https://github.com/UltraGeoDev/Telegram-Backups)
 
 ## 🫂 Contacts (sexual):
 - [💌 email](mailto:me@ultrageopro.ru)
