@@ -4,10 +4,22 @@
     <title>UltraGeoSite</title>
     <link>http://localhost:1313/</link>
     <description>Recent content on UltraGeoSite</description>
-    <generator>Hugo -- 0.125.0</generator>
+    <generator>Hugo -- 0.126.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 17 Apr 2024 22:16:16 +0300</lastBuildDate>
+    <lastBuildDate>Fri, 17 May 2024 10:53:16 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Crime and Punishment. Part one. Timeline.</title>
+      <link>http://localhost:1313/posts/literature/</link>
+      <pubDate>Fri, 17 May 2024 10:53:16 +0300</pubDate>
+      <guid>http://localhost:1313/posts/literature/</guid>
+      <description>📃 Описание проекта В представленном проекте приведен краткий разбор первой части &amp;ldquo;Преступления и наказания&amp;rdquo; Федора Достоевского.
+В описании каждой части фигурируют два пункта:
+🎭 Действия 👨 Раскольников В первом пункте описано все, что происходит в главе: какие поступки совершают Раскольников и другие персонажи.
+Во втором пункте описаны мысли Раскольникова: о чем он думает, что замышляет, из-за чего переживает.
+Также могут присутствовать дополнительные пункты, которые раскрывают содержание главы.
+1 2 3 1.</description>
+    </item>
     <item>
       <title>Time Series</title>
       <link>http://localhost:1313/posts/time/</link>
@@ -25,7 +37,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/about/</guid>
       <description>🧑‍🎓 About Me: I am a neural network developer and mathematician from Russia.
-📚 Calculus and Linear Algebra. 🧠 Deep Learning/Neural Networks 📈 Data analysis 💻 Backend development 🔭 I’m currently working on Diffusion Model 🌱 I’m currently learning ML/DL, calculus, mobile development 👯 I am a member of the CHFTM organization 📃 Latest repository 🫂 Contacts (sexual): 💌 email 💌 work email 🛩️ telegram 🛩️ work telegram 😾 github 📘 articles Also look at the projects of the UltraGeoDev organization</description>
+📚 Calculus and Linear Algebra. 🧠 Deep Learning/Neural Networks 👁️ Computer Vision 🔭 I’m currently working on Diffusion Model 🌱 I’m currently learning ML/DL, calculus, backend development 👯 I am a member of the CHFTM organization 🤖 Contexto Game Bot dev 📃 Latest repository 🫂 Contacts (sexual): 💌 email 💌 work email 🛩️ telegram 🛩️ work telegram 😾 github 📘 articles Also look at the projects of the UltraGeoDev organization</description>
     </item>
   </channel>
 </rss>

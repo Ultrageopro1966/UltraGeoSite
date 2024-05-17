@@ -4,10 +4,22 @@
     <title>Posts on UltraGeoSite</title>
     <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on UltraGeoSite</description>
-    <generator>Hugo -- 0.125.0</generator>
+    <generator>Hugo -- 0.126.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 17 Apr 2024 22:16:16 +0300</lastBuildDate>
+    <lastBuildDate>Fri, 17 May 2024 10:53:16 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Crime and Punishment. Part one. Timeline.</title>
+      <link>http://localhost:1313/posts/literature/</link>
+      <pubDate>Fri, 17 May 2024 10:53:16 +0300</pubDate>
+      <guid>http://localhost:1313/posts/literature/</guid>
+      <description>📃 Описание проекта В представленном проекте приведен краткий разбор первой части &amp;ldquo;Преступления и наказания&amp;rdquo; Федора Достоевского.
+В описании каждой части фигурируют два пункта:
+🎭 Действия 👨 Раскольников В первом пункте описано все, что происходит в главе: какие поступки совершают Раскольников и другие персонажи.
+Во втором пункте описаны мысли Раскольникова: о чем он думает, что замышляет, из-за чего переживает.
+Также могут присутствовать дополнительные пункты, которые раскрывают содержание главы.
+1 2 3 1.</description>
+    </item>
     <item>
       <title>Time Series</title>
       <link>http://localhost:1313/posts/time/</link>
